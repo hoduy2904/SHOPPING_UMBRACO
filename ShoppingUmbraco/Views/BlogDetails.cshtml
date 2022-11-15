@@ -1,0 +1,30 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "~/Views/_LayoutBlog.cshtml";
+    string image = Model.HasValue("image") ? Model.Value<IPublishedContent>("image").Url : "";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-3">@Model.Value("title")</h1>
+    <div class="blog-item-top flex-row mb-3">
+
+        <div class="blog-profile d-flex mr-3">
+            <span class="text-secondary font-weight-500">By</span>
+            <div class="profile-image">
+                <img  style="max-width:20px;" src="https://live.staticflickr.com/491/31818797506_41e52a8b36.jpg" alt="@Model.Value("title")">
+            </div>
+            <a class="font-weight-500">@Model.CreatorName</a>
+        </div>
+
+        <span class="blog-date text-secondary">@Model.CreateDate</span>
+        <span class="blog-tag text-secondary"><a>Thời trang nữ</a>,<a>Thời trang nam</a></span>
+    </div>
+
+    <div class="image-content mb-5">
+        <img style="max-width:100%;" src="@image" alt="">
+    </div>
+    <div class="content">
+        @Html.Raw(Model.HasValue("description") ? Model.Value("description") : "")
+    </div>
+</div>

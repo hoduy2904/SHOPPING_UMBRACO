@@ -1,0 +1,7 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+var BannerThreeTemplate = Model.FirstChildOfType("bannerThreeTemplate");
+}
+        <div class="banner-two-img mt-3">
+            <img src="@(BannerThreeTemplate.Value<IPublishedContent>("image").Url)" alt="">
+        </div>

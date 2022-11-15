@@ -1,0 +1,166 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var Umbras = Umbraco;
+    var rootPage = Model.AncestorOrSelf("blog").Children.Where(x => x.ContentType.Alias.Equals("blogCategory"));
+}
+<header class="top-header-blog">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-4">
+                <div class="search-form text-left text-white">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="site-logo text-center">
+                    <img src="https://storage.googleapis.com/ops-shopee-files-live/live/shopee-blog/2022/09/8733f4dd-seatalk_img_1652149161-300x133-1.png" />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="toggle-menu text-right text-white">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<header class="bottom-header">
+    <div class="container">
+        <div class="navbar-header">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="navbar-menu">
+                        @foreach (var item in rootPage)
+                        {
+                            <li class="menu-item">
+                                @item.Name
+                                <div class="navbar-arrow">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                @if (item.Children.Count() > 0)
+                                {
+                                    <ul class="navbar-submenu">
+                                        @foreach (var itemChild in item.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                                        {
+                                            if (itemChild.Children.Count() > 0)
+                                            {
+                                                <li class="menu-item has-child">
+
+                                                    <a href="@itemChild.Url"> @itemChild.Name</a>
+                                                    <ul class="navbar-submenu child">
+                                                        @foreach (var itemChild2 in itemChild.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                                                        {
+                                                            if (itemChild2.Children.Count() > 0)
+                                                            {
+                                                                <li class="menu-item has-child">
+                                                                    <a href="@itemChild2.Url"> @itemChild.Name</a>
+                                                                    <ul class="navbar-submenu child">
+                                                                        @foreach (var itemChild3 in itemChild2.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                                                                        {
+                                                                            <li class="menu-item"><a href="@itemChild3.Url">@itemChild3.Name</a></li>
+                                                                        }
+                                                                    </ul>
+                                                                    <div class="arrow-chilren">
+                                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li class="menu-item"><a href="@itemChild2.Url">@itemChild2.Name</a></li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                    <div class="arrow-chilren">
+                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                    </div>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="menu-item"><a href="@itemChild.Url">@itemChild.Name</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<sidebar class="mobile-menu">
+    <div class="mobile-menu-item mb-3">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-8 site-logo">
+                <img style="max-width: 100%;" src="https://storage.googleapis.com/ops-shopee-files-live/live/shopee-blog/2022/09/8733f4dd-seatalk_img_1652149161-300x133-1.png" alt="">
+            </div>
+            <div class="col-4 text-right">
+                <div class="arrow-chilren close-menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu-item">
+        <nav class="mobile-main-nav">
+            <ul class="mobile-primary-menu">
+                @foreach (var item in rootPage)
+                {
+                    <li class="menu-item has-child">
+                        <div class="d-flex justify-content-between dropmenu-child">
+                            <a href="@item.Url">@item.Name</a>
+                            <div class="arrow-chilren">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <ul class="navbar-submenu">
+                            @foreach (var itemChild in item.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                            {
+                                <li class="menu-item has-child">
+                                    <div class="d-flex justify-content-between dropmenu-child">
+                                        <a href="@itemChild.Url">@itemChild.Name</a>
+
+                                        <div class="arrow-chilren">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </div>
+                                    </div>
+                                    <ul class="navbar-submenu ">
+                                        @foreach (var itemChild2 in itemChild.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                                        {
+                                            <li class="menu-item has-child">
+                                                <div class="d-flex justify-content-between dropmenu-child">
+                                                    <a href="@itemChild2.Url">@itemChild2.Name</a>
+                                                    <div class="arrow-chilren">
+                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                    </div>
+                                                </div>
+                                                <ul class="navbar-submenu ">
+                                                    @foreach (var itemChild3 in itemChild2.Children.Where(x => x.ContentType.Alias.Equals("blogCategory")))
+                                                    {
+                                                        <li class="menu-item has-child">
+                                                            <div class="d-flex justify-content-between dropmenu-child">
+                                                                <a href="@itemChild3.Url">@itemChild3.Name</a>
+                                                                <div class="arrow-chilren">
+                                                                    <i class="fa-solid fa-chevron-right"></i>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</sidebar>

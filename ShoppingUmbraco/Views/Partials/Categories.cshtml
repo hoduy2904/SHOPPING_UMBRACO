@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var Category = Model.FirstChildOfType("categoryTemplate");
+    var rootPage = Model.AncestorOrSelf("homePage");
+}
+<div class="section section-category">
+    <div class="Header-seaction-category">@Category.Value("title")</div>
+    <div class="body-section-category">
+
+    </div>
+</div>
+<script>
+    $(function () {
+        $('.body-section-category').html('');
+        $.ajax({
+            url: "https://localhost:5001/api/Category/getCategories",
+            method: "GET",
+            success: function (result) {
+                if (result.success) {
+                    console.log(result.data[1])
+                    for (var i = 0; i < result.data.length; i++) {
+                        appenData(result.data[i])
+                    }
+                }
+            },
+        })
+
+        function appenData(item) {
+            let isUrl = (/(https?:\/\/)/).test(item.image);
+            if (!isUrl) {
+                item.image = "https://localhost:5001" + item.image
+            }
+                $('.body-section-category').append(
+                    `
+                <a style='color:inherit; text-decoration:none;' href='@(rootPage.Url+"category?id=")${item.id}'>
+                <div class="body-section-category-item">
+                    <img src="${item.image}" />
+                    <p class="text-center">${item.name}</p>
+                </div>
+                </a>
+`
+                )
+        }
+    })
+</script>

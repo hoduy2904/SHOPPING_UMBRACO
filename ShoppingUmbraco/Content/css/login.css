@@ -1,0 +1,50 @@
+.head-login{
+    padding: 20px 0;
+    height: 84px;
+    background-color: #fff;
+}
+.head-login .logo{
+    align-items: center;
+    display: flex;
+}
+.head-login .logo img{
+   max-width: 140px;
+}
+.head-login-title{
+    place-self: flex-end;
+    font-size: 1.5rem;
+    margin-left: 10px;
+}
+.wrapper{
+    background-color: rgb(238, 77, 45);
+    height: 600px;
+}
+.wrapper-form{
+    align-items: center;
+    margin: auto;
+    justify-content: flex-end;
+    display: flex;
+    max-width: 1000px;
+    height: 100%;
+    background-image: url(https://cf.shopee.vn/file/623107776ce3d3176a333ad1503d8152);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.register-form{
+    width: 400px;
+    background-color: #fff;
+    border-radius:5px;
+    padding: 20px;
+    position: absolute;
+}
+.register-form h1{
+    font-size: 20px;
+}
+.btn-custom-primary{
+    background-color: #f63;
+    color:#fff;
+}
+.btn-custom-primary:hover{
+    background-color: rgb(202, 77, 36);
+    color: #fff;
+}

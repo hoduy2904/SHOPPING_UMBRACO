@@ -1,0 +1,126 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var Umbras = Umbraco;
+    var rootPage = Model.AncestorOrSelf("homePage");
+
+    var cur = Model.Root().Cultures;
+}
+<header class="header-top">
+    <div class="header-navbar-top">
+        <nav class="container navbar-top">
+            <ul class="navbar-left">
+                <li><a>@Umbraco.GetDictionaryValue("Seller channel")</a></li>
+                <li><a>@Umbraco.GetDictionaryValue("Become a partner")</a></li>
+                <li><a class="text-white" href="@(rootPage.Url)blog">Shopee blog</a></li>
+            </ul>
+            <ul class="navbar-right">
+                <li><a><i class="fa-solid fa-bell"></i> @Umbraco.GetDictionaryValue("Notification")</a></li>
+                <li><a> <i class="fa-solid fa-circle-question"></i> @Umbraco.GetDictionaryValue("Support")</a></li>
+                <li>
+                    <i class="fa-solid fa-earth-americas"></i>
+                    <select style="background:transparent; border:none; color:#fff;">
+                        @foreach (var item in cur)
+                        {
+                            <option style="color:#333;">@System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag(item.Value.Culture).ThreeLetterISOLanguageName.ToUpper()</option>
+                        }
+                    </select>
+                </li>
+                <li>
+                    <ul class="navbar-left">
+                        <li><a class="text-white" href="@(rootPage.Url)Login">@Umbraco.GetDictionaryValue("Sign in")</a></li>
+                        <li><a class="text-white" href="@(rootPage.Url)Register">@Umbraco.GetDictionaryValue("Sign up")</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div><div class="container">
+        <div class="header-navbar-body row">
+            <div class="col-0 col-md-3 col-lg-3 logo-wrapper" style="height:100%;">
+                <a href="@rootPage.Url">
+                    <div class="logo" style="height:100%;">
+                        <img src="https://storage.googleapis.com/ops-shopee-files-live/live/affiliate-blog/2019/05/logo-full-white.png" style="max-height:100%;" />
+                    </div>
+                </a>
+            </div>
+            <div class="col-9 col-md-6 col-lg-6">
+                <div class="form-search">
+                    <input type="text" placeholder="Đăng ký và nhận voucer bạn mới lên đến 70k" name="" id="">
+                    <button class="btn bg-primary text-white"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+            <div class="col-3 text-right">
+                <b class="text-white right-nav cart"><i class="fa-solid fa-cart-shopping"></i><span class="cartCount">0</span></b>
+                <b class="text-white right-nav"><i class="fa-solid fa-user"></i></b>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    if (window.localStorage.getItem("accessToken")) {
+
+        $.ajax({
+            url: "https://localhost:5001/api/user/getUser",
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + window.localStorage.getItem("accessToken"),
+            },
+            success: function (data) {
+                console.log(data);
+                $('ul li .navbar-left').html(`<li>Xin chào: <b>${data.data.lastName} ${data.data.firstName ?? ""}</b></li>`)
+            },
+            error: function (r) {
+                if (r.status == 401)
+                    window.localStorage.removeItem("accessToken");
+            }
+        });
+
+        $.ajax({
+            url: "https://localhost:5001/api/cart/getCarts",
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + window.localStorage.getItem("accessToken"),
+            },
+            success: function (data) {
+                $('.cartCount').text(data.data.total);
+                $('#cartStore tbody').html('');
+                data.data.cart.forEach(item => {
+                    $('#cartStore tbody').append(`
+                <tr id='${item.id}' product-id='${item.productVariation.productId}' variation-id='${item.productVariation.id}'>
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" value='${item.id}' id="cb${item.id}">
+                                <label class="custom-control-label bg-greylight" for="cb${item.id}"></label>
+                            </div>
+                        </td>
+                        <td class="d-flex" style="column-gap: 20px;">
+                            <div class="image-cart" style="width:80px;height:80px;">
+                            <img style="max-width:100%;" src="${item.productVariation.productImages[0].image}"/>
+                        </div>
+                            <p>${item.productVariation.product.name}</p>
+                            <div class="select" >
+                                <p>Phân loại hàng</p>
+                            <select style="border:none;">
+                                <option>Màu xanh</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td>${item.productVariation.priceCurrent.toLocaleString('vi-VN')}</td>
+                        <td><input style="max-width:100px;" type="number" name="" class="form-control text-center" value="${item.number}" id=""></td>
+                        <td style="color:#f63">${item.totalMoney.toLocaleString('vi-VN')}</td>
+                        <td>Xóa</td>
+                    </tr>
+`)
+                })
+            }
+        })
+    }
+
+    $('.cart').on('click', function () {
+        if (window.localStorage.getItem("accessToken")) {
+            window.location.href = "/cart";
+        } else {
+            window.location.href = "/login";
+        }
+    })
+</script>

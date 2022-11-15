@@ -1,0 +1,61 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var Products = Model.FirstChildOfType("productsTemplate");
+    var rootPage = Model.AncestorOrSelf("homePage");
+}
+<div class="section products">
+    <div class="Header-seaction-category">@(Products.Value<string>("title"))</div>
+    <div class="body-section-products mt-3">
+
+    </div>
+</div>
+<script type="text/x-jquery-tmpl">
+
+</script>
+
+<script>
+    $(function () {
+        $('.body-section-products').html('');
+
+        $.ajax({
+            url: "https://localhost:5001/api/Product/getProducts",
+            method: "GET",
+            success: function (result) {
+                if (result.success) {
+                    result.data.forEach(appendDataProduct)
+                }
+            },
+        })
+
+        function appendDataProduct(item) {
+            let isUrl = (/(https?:\/\/)/).test(item.productImages[0].image);
+            if (!isUrl) {
+                item.productImages[0].image = "https://localhost:5001"+item.productImages[0].image
+            }
+            $('.body-section-products').append(`
+<div class="product">
+   <a style='color:inherit; text-decoration:none;' href="@(rootPage.Url+"product?id=")${item.id}">
+            <div class="product-image">
+                <img src="${item.productImages[0].image}" />
+
+            </div>
+
+            <div class="body-product">
+                <p class="title-product">${item.name}</p>
+
+                <div class="product-price">
+                   <b class="old-price">${item.productVariations[0].priceOld.toLocaleString('vi-VN')??''}</b>
+                    <b class="current-price">${item.productVariations[0].priceCurrent.toLocaleString('vi-VN') }đ</b>
+                </div>
+                <div class="sale-rating">
+                    <span>Đã bán 1.8k</span>
+                </div>
+
+                <div class="location-shop">TP. Hồ Chí Minh</div>
+            </div>
+            </a>
+        </div>
+`)
+        }
+    })
+</script>

@@ -1,0 +1,116 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<div class="container mt-3">
+    <div class="section">
+        <h1 style="color:#f63">@Umbraco.GetDictionaryValue("Cart")</h1>
+    </div>
+    <div class="table-responsive bg-white section">
+        <table class="table" id="cartStore">
+            <thead>
+                <tr style="white-space: nowrap;">
+                    <th>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheck1" onclick="toggleCheckbox()">
+                            <label class="custom-control-label bg-greylight" for="customCheck1"></label>
+                        </div>
+                    </th>
+                    <th>Sản phẩm</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Giá tiền</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <div class="section">
+        <div class="d-flex justify-content-end" style="column-gap: 10px;">
+            <p>Tổng tiền hàng: <b class="count-Products">0</b> sản phẩm</p>
+            <b style="font-size: 30px;line-height: 30px; color:#f63;"><span class="totalMoneyCart">0</span> đ</b>
+            <button id="btnBuy" class="btnct btn-shopee active px-5">Mua hàng</button>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+
+        const toggleCheckbox = () => {
+            let checked = $('#customCheck1').prop('checked');
+            $('#cartStore tbody input[type=checkbox]').prop('checked', checked)
+            let count = $('#cartStore tbody input[type=checkbox]:checked').length;
+            $('.count-Products').text(count);
+            loadPrice();
+        };
+
+        $('#btnBuy').on('click', function () {
+            let arrId = [];
+            let arrItems = $('#cartStore tbody input[type=checkbox]:checked');
+            arrItems.each(index => {
+                let id = $(arrItems[index]).closest('tr').attr('id');
+                arrId.push(id);
+            });
+
+            window.sessionStorage.setItem("cartChoose", JSON.stringify(arrId));
+            window.location.href = "/pay";
+        })
+
+
+        $(function () {
+            console.log("isloader");
+            $('#cartStore tbody input[type=number]').on('change', function () {
+                setTimeout(changeNumber(this), 2000);
+            });
+
+            if (!window.localStorage.getItem("accessToken")) {
+                window.location.href = "/login";
+            }
+
+            $('#cartStore tbody input[type=checkbox]').on('change', function () {
+                let count = $('#cartStore tbody input[type=checkbox]:checked').length;
+                $('.count-Products').text(count);
+                loadPrice();
+            });
+        });
+
+        const loadPrice = () => {
+            let arrItems = $('#cartStore tbody input[type=checkbox]:checked')
+            let total = 0;
+            arrItems.each(index => {
+                let money = $(arrItems[index]).closest('tr').children('td:nth-child(5)').text().replace(/[^\d]/, "");
+                total += Number.parseInt(money);
+            })
+            $('.totalMoneyCart').text(total.toLocaleString("vi-VN"));
+        }
+
+        const changeNumber = (cart) => {
+            let id = $(cart).closest('tr').attr('id')
+            let variationId = $(cart).closest('tr').attr('variation-id');
+            let productId = $(cart).closest('tr').attr('product-id');
+            $.ajax({
+                url: "https://localhost:5001/api/cart/editCart?ProductVariationId=" + variationId,
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer " + window.localStorage.getItem("accessToken"),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    id: id,
+                    productId: productId,
+                    number: $(cart).val(),
+                }),
+                success: function (data) {
+                    $(cart).closest('tr').children('td:nth-child(5)').text(data.data.total.toLocaleString('vi-VN'));
+                    loadPrice();
+                }
+            })
+        }
+    </script>
+}

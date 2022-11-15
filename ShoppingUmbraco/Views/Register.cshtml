@@ -1,0 +1,112 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+	Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/Content/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <header class="head-login">
+            <div class="row align-items-center">
+                <div class="col-6 logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/2560px-Shopee.svg.png" />
+                    <div class="head-login-title">@Umbraco.GetDictionaryValue("Sign up")</div>
+                </div>
+                <div class="col-6 text-right">
+                    <a style="color:#f63; font-weight: 600;" href="#">@Umbraco.GetDictionaryValue("You need help")</a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div class="wrapper">
+        <div class="wrapper-form">
+            <div class="register-form">
+                <h1 class="mb-4">@Umbraco.GetDictionaryValue("Sign up")</h1>
+                <form>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="text" name="firstName" class="form-control" required placeholder="First name">
+                        </div>
+                        <div class="col">
+                            <input type="text" name="lastName" class="form-control" required placeholder="Last name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="Username" id="" required placeholder="Username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="Email" id="" required placeholder="Email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="Password" id="" required placeholder="Password" class="form-control">
+                    </div>
+                    <button type="submit" id="btnRegister" class="btn btn-custom-primary w-100">@Umbraco.GetDictionaryValue("Sign up")</button>
+                    <p class="text-secondary text-center mt-3">@Umbraco.GetDictionaryValue("You already have an account") <a href="/Login" style="color: #f63;"><b>@Umbraco.GetDictionaryValue("Sign in")</b></a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $('#btnRegister').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "https://localhost:5001/api/auth/Register",
+                type: "POST",
+                dataType: "json"
+                , contentType: "application/json",
+                data: JSON.stringify({
+                    firstName: $('input[name=firstName]').val(),
+                    lastName: $('input[name=lastName]').val(),
+                    Email: $('input[name=Email]').val(),
+                    Username: $('input[name=Username]').val(),
+                    password: $('input[name=Password]').val()
+                }),
+                success: function (data) {
+                    if (data.success) {
+                        window.location.href = "/login";
+                    } else {
+                        showAlert("error", data.message);
+                    }
+                }
+            })
+
+        })
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+        const showAlert = (icon, message) => {
+            Toast.fire({
+                icon: icon,
+                title: message
+            })
+        }
+    </script>
+</body>
+</html>

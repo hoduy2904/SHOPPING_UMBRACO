@@ -1,0 +1,21 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var Advertise = Model.AncestorOrSelf("homePage").FirstChildOfType("advertiseTemplate");
+}
+<div class="advertise">
+    @foreach (var item in Advertise.Children)
+    {
+        string image = (item.HasValue("image") ? item.Value<IPublishedContent>("image").Url : "");
+
+        <div class="advertise-item">
+            <a style="color:inherit;" href="@item.Value("href")">
+                <h4 class="advertise-Title">
+                    @item.Name
+                </h4>
+                <div class="advertise-image">
+                    <img src="@image" alt="@item.Value("title")">
+                </div>
+            </a>
+        </div>
+    }
+</div>

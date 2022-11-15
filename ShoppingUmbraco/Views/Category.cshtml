@@ -1,0 +1,121 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var rootPage = Model.AncestorOrSelf("homePage");
+    Layout = "~/Views/_Layout.cshtml";
+    var category = new ShoppingUmbraco.Models.Category();
+    HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://localhost:5001/api/category/getCategory/" + Request.QueryString["id"]);
+    request.Method = "GET";
+    request.ContentType = "application/json";
+    WebResponse response = request.GetResponse();
+    using (var reader = new StreamReader(response.GetResponseStream()))
+    {
+        var ApiStatus = reader.ReadToEnd();
+        var ob = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(ApiStatus);
+        var oa = (object)ob.data;
+        category = Newtonsoft.Json.JsonConvert.DeserializeObject<ShoppingUmbraco.Models.Category>(oa.ToString());
+    }
+}
+<div class="container mt-4">
+    <input type="hidden" value="@category.Id" id="categoryId"/>
+    <div class="filter-all mb-4">
+        <button style="border:1px solid #cdcdcd;" class="btn "><i class="fa-solid fa-filter"></i> Filter</button>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-2 col-lg-2 list-category">
+            <h6 style="font-size: 18px;"><i class="fa-solid fa-bars"></i> @Umbraco.GetDictionaryValue("All of Category")</h6>
+            <hr>
+            <ul style="list-style: none;" class="p-0 Catogories">
+                <li class="active d-flex align-items-center"><div class="arrow"></div> <span>Danh mục 1</span></li>
+                <li class="d-flex align-items-center"><div class="arrow"></div> <span>Danh mục 1</span></li>
+                <li class="d-flex align-items-center"><div class="arrow"></div> <span>Danh mục 1</span></li>
+                <li class="d-flex align-items-center"><div class="arrow"></div> <span>Danh mục 1</span></li>
+                <li class="d-flex align-items-center"><div class="arrow"></div> <span>Danh mục 1</span></li>
+            </ul>
+        </div>
+        <div class="col-12 col-sm-12 col-md-10 col-lg-10">
+            <div class="row">
+                <div class="col-12">
+                    <div class="filter bg-greylight row p-3">
+                        <div class="col-10 d-flex align-items-center" style="column-gap: 10px;">
+                            <div>@Umbraco.GetDictionaryValue("Sort by")</div>
+                            <button class="btnct btn-shopee active">@Umbraco.GetDictionaryValue("Latest")</button>
+                            <button class="btnct btn-shopee">@Umbraco.GetDictionaryValue("Popular")</button>
+                            <button class="btnct btn-shopee">@Umbraco.GetDictionaryValue("Selling")</button>
+                            <select name="" class="btnct" id="">
+                                <option>@Umbraco.GetDictionaryValue("Ascending")</option>
+                                <option>@Umbraco.GetDictionaryValue("Decrease")</option>
+                            </select>
+                        </div>
+                        <div class="col-2 d-flex align-items-center justify-content-end">
+                            <button style="border-right: 1px solid #ebebeb;" disabled class="btnct btn-shopee"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="btnct btn-shopee"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="body-section-products mt-3">
+                        @foreach (var item in category.Products)
+                        {
+                            var rg = new System.Text.RegularExpressions.Regex(@"https?\:\/\/");
+                            string image = item.ProductImages.Count > 0 ? item.ProductImages.FirstOrDefault().Image : "";
+                            if (!rg.IsMatch(image) && image.Length > 5)
+                            {
+                                image = "https://localhost:5001" + image;
+                            }
+                            <div class="product">
+                                <a style='color:inherit; text-decoration:none;' href='@(rootPage.Url+"product?id="+item.Id)'>
+                                    <div class="product-image">
+                                        <img src="@image" />
+                                    </div>
+                                    <div class="body-product">
+                                        <p class="title-product">@item.Name</p>
+
+                                        <div class="product-price">
+                                            @if (item.ProductVariations.FirstOrDefault().PriceOld > 0 || item.ProductVariations.FirstOrDefault().PriceOld > item.ProductVariations.FirstOrDefault().PriceCurrent)
+                                            {
+                                                <b class="old-price">@item.ProductVariations.FirstOrDefault().PriceOld đ</b>
+
+                                            }<b class="current-price">@item.ProductVariations.FirstOrDefault().PriceCurrent đ</b>
+                                        </div>
+
+                                        <div class="sale-rating">
+                                            <span>Đã bán 1.8k</span>
+                                        </div>
+
+                                        <div class="location-shop">TP. Hồ Chí Minh</div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $('.filter-all').on('click', function () {
+            $('.list-category').slideToggle();
+        })
+
+        $.ajax({
+            url: "https://localhost:5001/api/Category/getCategories",
+            method: "GET",
+            success: function (data) {
+                if (data.success) {
+                    $('.Catogories').html('');
+                    data.data.forEach(item => appendCategories(item));
+                }
+            }
+        })
+
+        const appendCategories = (data) => {
+            let isActive = $('#categoryId').val() == data.id ? "active" : "";
+            $('.Catogories').append(`
+      <li class="${isActive} d-flex align-items-center"><a href="/category?id=${data.id}"><div class="arrow"></div> <span>${data.name}</span></a></li>
+    `)
+        }
+    </script>
+}

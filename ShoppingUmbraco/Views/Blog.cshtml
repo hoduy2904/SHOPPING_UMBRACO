@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Blog>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "~/Views/_LayoutBlog.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-9">
+        <div class="row">
+            @foreach (var item in Model.Descendants().Where(x => x.IsVisible() && x.ContentType.Alias.Equals("blogDetails")))
+            {
+                string image = item.HasValue("image") ? item.Value<IPublishedContent>("image").Url : "";
+
+                <article class="col-md-12 col-lg-6 mb-5">
+                    <a href="@item.Url">
+                        <div class="blog-item">
+                            <div class="blog-item-img">
+                                <img src="@image" alt="@item.Name">
+                            </div>
+                            <div class="blog-item-top">
+
+                                <span class="blog-date text-shopee">@item.CreateDate</span>
+                                <span class="blog-tag text-shopee"><a>Thời trang nữ</a>,<a>Thời trang nam</a></span>
+                                <div class="blog-profile">
+                                    <span class="text-shopee font-weight-500">By</span>
+                                    <div class="profile-image">
+                                        <img src="https://secure.gravatar.com/avatar/0a340980afdbb93b71c4a244d23b4c00?s=16&d=blank&r=g" alt="">
+                                    </div>
+                                    <a class="font-weight-500">@item.CreatorName</a>
+                                </div>
+                            </div>
+                            <h5 class="blog-item-title text-shopee">@item.Name</h5>
+                            <p class="blog-description">@item.Value("descriptionShort") [...]</p>
+                        </div>
+                    </a>
+                </article>
+            }
+
+
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-3">
+       
+        @{ 
+            Html.RenderPartial("Advertise");
+        }
+    </div>
+</div>

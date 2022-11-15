@@ -1,0 +1,59 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var BannerTemplate = Model.FirstChildOfType("bannerTemplate");
+    var imagesMain = BannerTemplate.Children;
+    var categoryBanner = BannerTemplate.Value<IEnumerable<IPublishedElement>>("categoryBanner");
+}
+<div class="section">
+    <div class="container">
+        <div class="banner">
+            <div class="banner-main  owl-carousel owl-theme">
+                @foreach (var img in imagesMain)
+                {
+                    <div class="banner-img">
+                        <img class="w-100" src="@(img.Value<IPublishedContent>("image").Url)" alt="">
+                    </div>
+                }
+
+            </div>
+            <div class="banner-top">
+                @if (BannerTemplate.HasValue("bannerTop"))
+                {
+                    <img class="w-100" src="@(BannerTemplate.Value<IPublishedContent>("bannerTop").Url)" alt="">
+                }
+            </div>
+            <div class="banner-bottom">
+                @if (BannerTemplate.HasValue("bannerBottom"))
+                {
+
+                    <img class="w-100" src="@(BannerTemplate.Value<IPublishedContent>("bannerBottom").Url)" alt="">
+                }
+            </div>
+        </div>
+        <div class="d-flex justify-content-around" style="overflow-x:auto;">
+            @foreach (var item in categoryBanner)
+            {
+                string image = item.Value<IPublishedContent>("image") == null ? "" : item.Value<IPublishedContent>("image").Url;
+                <a href="@(item.Value<string>("href"))>">
+                    <div class="banner-category">
+                        <div class="banner-category-img">
+                            <img src="@(image)" style="max-width: 100%;" alt="">
+                        </div>
+                        <div class="banner-category-title">
+                            @item.Value("title")
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $('.banner-main').owlCarousel({
+        loop: true,
+        margin: 10,
+        nav: true,
+        navText: [`<i class="fa-solid fa-chevron-left"></i>`, `<i class="fa-solid fa-chevron-right"></i>`],
+        items: 1
+    })
+</script>

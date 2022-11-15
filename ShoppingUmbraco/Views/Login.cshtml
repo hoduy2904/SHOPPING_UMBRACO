@@ -1,0 +1,107 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+	Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/Content/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <header class="head-login">
+            <div class="row align-items-center">
+                <div class="col-6 logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/2560px-Shopee.svg.png" />
+                    <div class="head-login-title">@Umbraco.GetDictionaryValue("Sign in")</div>
+                </div>
+                <div class="col-6 text-right">
+                    <a style="color:#f63; font-weight: 600;" href="#">@Umbraco.GetDictionaryValue("You need help")</a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div class="wrapper">
+        <div class="wrapper-form">
+            <div class="register-form">
+                <h1 class="mb-4">@Umbraco.GetDictionaryValue("Sign in")</h1>
+                <form>
+
+                    <div class="form-group">
+                        <input type="text" name="" id="username" required placeholder="Username/Email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="" id="password" required placeholder="Password" class="form-control">
+                    </div>
+                    <button type="submit" id="btnLogin" class="btn btn-custom-primary w-100">@Umbraco.GetDictionaryValue("Sign in")</button>
+                    <p class="text-secondary text-center mt-3">@Umbraco.GetDictionaryValue("You don't have an account yet") <a href="/Register" style="color: #f63;"><b>@Umbraco.GetDictionaryValue("Sign up")</b></a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $('#btnLogin').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: "https://localhost:5001/api/auth/login",
+                type: "POST",
+                dataType: "json"
+                , contentType: "application/json",
+                data: JSON.stringify({
+                    username: $('#username').val(),
+                    password: $('#password').val()
+                }),
+                success: function (data) {
+                    if (data.success) {
+                        window.localStorage.setItem("accessToken", data.data.accessToken);
+                        window.location.href = "/";
+                    } else {
+                        showAlert("error", data.message);
+                    }
+                }
+            })
+
+        })
+
+        var setCookie = (cname, cvalue, exdays) => {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+        const showAlert = (icon, message) => {
+            Toast.fire({
+                icon: icon,
+                title: message
+            })
+        }
+    </script>
+</body>
+</html>

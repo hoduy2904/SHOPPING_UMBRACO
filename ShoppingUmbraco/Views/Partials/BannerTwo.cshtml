@@ -1,0 +1,9 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+var BannerTwoTemplate = Model.FirstChildOfType("bannerTwoTemplate");
+}
+ <div class="banner-two section d-flex">
+        <div class="banner-two-img">
+            <img src="@(BannerTwoTemplate.Value<IPublishedContent>("image").Url)" alt="">
+        </div>
+    </div>
