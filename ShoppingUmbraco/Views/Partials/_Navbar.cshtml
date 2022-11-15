@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="col-3 text-right">
-                <b class="text-white right-nav cart"><i class="fa-solid fa-cart-shopping"></i><span class="cartCount">0</span></b>
+                <b style="cursor: pointer;" class="text-white right-nav cart"><i class="fa-solid fa-cart-shopping"></i><span class="cartCount">0</span></b>
                 <b class="text-white right-nav"><i class="fa-solid fa-user"></i></b>
             </div>
         </div>
@@ -84,34 +84,6 @@
             success: function (data) {
                 $('.cartCount').text(data.data.total);
                 $('#cartStore tbody').html('');
-                data.data.cart.forEach(item => {
-                    $('#cartStore tbody').append(`
-                <tr id='${item.id}' product-id='${item.productVariation.productId}' variation-id='${item.productVariation.id}'>
-                        <td>
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" value='${item.id}' id="cb${item.id}">
-                                <label class="custom-control-label bg-greylight" for="cb${item.id}"></label>
-                            </div>
-                        </td>
-                        <td class="d-flex" style="column-gap: 20px;">
-                            <div class="image-cart" style="width:80px;height:80px;">
-                            <img style="max-width:100%;" src="${item.productVariation.productImages[0].image}"/>
-                        </div>
-                            <p>${item.productVariation.product.name}</p>
-                            <div class="select" >
-                                <p>Phân loại hàng</p>
-                            <select style="border:none;">
-                                <option>Màu xanh</option>
-                            </select>
-                        </div>
-                        </td>
-                        <td>${item.productVariation.priceCurrent.toLocaleString('vi-VN')}</td>
-                        <td><input style="max-width:100px;" type="number" name="" class="form-control text-center" value="${item.number}" id=""></td>
-                        <td style="color:#f63">${item.totalMoney.toLocaleString('vi-VN')}</td>
-                        <td>Xóa</td>
-                    </tr>
-`)
-                })
             }
         })
     }
